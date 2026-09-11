@@ -13,8 +13,9 @@ Static site for myhealingoasis.net. Built with [Astro](https://astro.build); the
 | `src/styles/global.css` | The page styles. |
 | `src/components/` | One file per section of the page (Nav, Hero, Proof, Testimonials, Meet, QuoteBand, Footer), plus `Text`, which renders one piece of copy, and `Home`, which stacks the sections. |
 | `src/pages/index.astro` | The home page. |
-| `src/pages/edit.astro` | The edit page: the home page with every piece of copy as a form field. Draft site only. |
-| `relay/relay.js` | The small server the edit page's Save and Publish buttons post to. |
+| `src/pages/edit.astro` | The edit page: the home page with every piece of copy as a form field, plus a Versions panel. Draft site only. |
+| `src/lib/versions.ts` | Builds the Versions list from the content file's git history at build time. |
+| `relay/relay.js` | The small server the edit page's Save, Publish and Restore buttons post to. |
 | `.github/workflows/` | Build-and-deploy automation. |
 
 ## Working on it
@@ -37,7 +38,7 @@ Two branches, two sites:
 Three ways in, one flow: make the change on `draft`, look at it on the preview site, then publish.
 
 - **Code.** Edit, push to `draft`, check the preview, then run the Publish workflow: `gh workflow run publish.yml`, or the "Run workflow" button on the Actions tab.
-- **The edit page.** `/edit/` on the draft site is the home page with every piece of copy as a field. Save commits the changes to `draft`; Publish does that and puts the draft site live. See "The edit page and the relay" below.
+- **The edit page.** `/edit/` on the draft site is the home page with every piece of copy as a field. Save commits the changes to `draft`; Publish does that and puts the draft site live. Its Versions panel lists every past version of the text with a Restore button. See "The edit page and the relay" below.
 - **A form.** [Pages CMS](https://app.pagescms.org) shows `content/home.json` as a form with plain labels, saves to `draft`, and has a Publish button. `.pages.yml` describes the form. Editors are invited by email and do not need a GitHub account. Use it for what the edit page does not cover yet: images, links, and adding or removing reviews.
 - **AI agents.** They read `AGENTS.md`, which describes the same flow and the rules of the codebase.
 
@@ -49,7 +50,9 @@ Pushing either branch runs the deploy workflow, which builds the site and upload
 
 ## The edit page and the relay
 
-The edit page is plain HTML: one form, no JavaScript. Its Save and Publish buttons post to the relay, `relay/relay.js`, a dependency-free server of about 160 lines that reads the content file from GitHub, applies the changed fields, commits the result to `draft`, and for Publish starts the Publish workflow. It runs on Node, or unchanged on Cloudflare Workers or Deno.
+The edit page is plain HTML with no JavaScript. Its Save and Publish buttons post to the relay, `relay/relay.js`, a dependency-free server of about 180 lines that reads the content file from GitHub, applies the changed fields, commits the result to `draft`, and for Publish starts the Publish workflow. It runs on Node, or unchanged on Cloudflare Workers or Deno.
+
+The Versions button in the bar opens a panel listing every past version of the text: when it was saved, where it came from, and which pieces of copy changed, in plain words. "Live now" marks the version the live site shows. Restore commits that version to `draft` as a new commit, so nothing is ever lost and a restore can itself be undone; "Undo the latest change" is the same thing for the most recent save. The list is built from git history at build time, and every save rebuilds the page, which is what keeps it current.
 
 Until it has a permanent home, the relay runs on your own machine, and the edit page on the draft site is built to post to `http://localhost:8787`. Browsers treat `localhost` as a secure origin, so that works from the public draft site without any warnings. No new token is needed: the GitHub CLI you are already signed in to has one with the right scopes, and `$(gh auth token)` hands it over.
 
@@ -77,10 +80,11 @@ When the relay moves to a server, set the `RELAY_URL` repository variable on Git
    ```
    It prints `Edit relay listening on http://localhost:8787`. Opening that address in a browser shows "The relay is running".
 3. Open the edit page: https://iambaney.github.io/mho-v2-draft/draft/edit/ . Click any text, change it, press **Save**. The confirmation page says how many pieces of copy were saved and returns to the editor after a minute; `gh run list --limit 3` shows the draft build in the meantime. When the page comes back the change is in it, and on the draft site: https://iambaney.github.io/mho-v2-draft/draft/ .
-4. Press **Publish**. About a minute later the live site shows it: https://iambaney.github.io/mho-v2-draft/ .
-5. The same change through the other doors, if useful:
+4. Press **Versions**. The change you just made is the top row. Press **Undo the latest change** or a **Restore this version** button, and a minute later the page is back to that version. Restore again to bring the change back.
+5. Press **Publish**. About a minute later the live site shows it: https://iambaney.github.io/mho-v2-draft/ .
+6. The same change through the other doors, if useful:
    - Pages CMS at https://app.pagescms.org : the same file as a form, its own Publish button, editors invited by email.
    - Code or an agent: edit `content/home.json` on `draft`, push, then `gh workflow run publish.yml`. `AGENTS.md` is what an agent reads first.
-6. Show the trail: `git fetch && git log --oneline -6 origin/draft`. Every save is a commit that says where it came from.
+7. Show the trail: `git fetch && git log --oneline -6 origin/draft`. Every save and restore is a commit that says where it came from.
 
 If something does not go through: `gh run list` shows the builds and `gh run view <run id> --log-failed` shows why one failed. The relay explains its own errors on the page it returns. A page that looks stale after a minute is usually the browser cache; reload it.

@@ -24,9 +24,10 @@ Nobody commits to `main` directly. Publishing is one action that merges `draft` 
 | `src/styles/global.css` | All layout and typography rules, grouped by section, with the responsive rules at the bottom. |
 | `src/components/` | One template per section: `Nav`, `Hero`, `Proof` (the stat cards), `Testimonials`, `Meet`, `QuoteBand`, `Footer`. Each is the HTML for that section with the content filled in. `Home` stacks them in order. `Text` renders one piece of copy, or a form field for it on the edit page. |
 | `src/pages/index.astro` | The home page: `Home` inside the base layout. |
-| `src/pages/edit.astro` | The edit page: `Home` with `edit` on, wrapped in a form that posts to the relay. Built into the draft site only. |
+| `src/pages/edit.astro` | The edit page: `Home` with `edit` on, wrapped in a form that posts to the relay, plus a Versions panel with a Restore button per past version. Built into the draft site only. |
+| `src/lib/versions.ts` | Reads the content file's git history at build time for the Versions panel. Needs the full history in the checkout, which the deploy workflows fetch. |
 | `src/styles/edit.css` | Styles for the edit page's form fields. Never loaded by the home page. |
-| `relay/relay.js` | The server the edit page posts to. Commits the changed copy to `draft` and starts the Publish workflow. |
+| `relay/relay.js` | The server the edit page posts to. Commits the changed copy to `draft`, restores earlier versions of it, and starts the Publish workflow. |
 | `src/layouts/Base.astro` | The `<html>` and `<head>` wrapper. |
 | `src/lib/` | Two small helpers: `withBase` prefixes site paths with the deploy base path; `splitLead` bolds the first word of the review lines. |
 | `public/images/` | Photos. Referenced from the content file as `/images/<name>`. |
@@ -37,7 +38,7 @@ Nobody commits to `main` directly. Publishing is one action that merges `draft` 
 
 ## The flow for every change
 
-1. Work on `draft`: `git switch draft && git pull`. Pull first, because the edit page and Pages CMS commit to this branch too (their commits say "via the edit page" or "via Pages CMS").
+1. Work on `draft`: `git switch draft && git pull`. Pull first, because the edit page and Pages CMS commit to this branch too (their commits say "via the edit page" or "via Pages CMS"). To go back to an earlier version of the text, restore it as a new commit; never reset or force-push.
 2. Make the change.
 3. Check it. `npm run build` must succeed. For a visual check run `npm run dev` and open the URL it prints. Astro keeps the dev server running in the background and reloads the page when files change; `npx astro dev stop` stops it.
 4. Commit with a one-line message that says what changed for a visitor, for example `Shorten the hero headline`. Push to `draft`.

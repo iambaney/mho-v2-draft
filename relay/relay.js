@@ -1,8 +1,8 @@
 // The edit relay: the only server-side code in the project.
 //
-// The edit page (src/pages/edit.astro) posts its form here. Save turns the changed fields
+// The edit page (src/pages/edit.astro) posts its forms here. Save turns the changed fields
 // into one commit on the draft branch; Publish does the same and then starts the Publish
-// workflow. Zero dependencies. `node relay/relay.js` runs it on Node 24, and the exported
+// workflow; Restore commits an earlier version of the content file. Zero dependencies. `node relay/relay.js` runs it on Node 24, and the exported
 // handler runs unchanged on Cloudflare Workers or Deno.
 //
 // Settings, as environment variables:
@@ -40,12 +40,15 @@ const handler = {
     if (request.method === 'GET') {
       return page('The relay is running', `Ready to save to ${esc(cfg.GITHUB_REPO)} on the ${esc(cfg.BRANCH)} branch.`);
     }
-    if (request.method !== 'POST' || !['/save', '/publish'].includes(action)) {
+    if (request.method !== 'POST' || !['/save', '/publish', '/restore'].includes(action)) {
       return new Response('Not found', { status: 404 });
     }
     try {
       const form = new URLSearchParams(await request.text());
       const gh = github(cfg);
+      if (action === '/restore') {
+        return page('Restored', `${await restore(gh, form)} The draft site updates in about a minute.`, back, 60);
+      }
       const saved = await save(gh, form);
       if (action === '/publish') {
         await gh.dispatch();
@@ -76,6 +79,18 @@ async function save(gh, form) {
   const noun = changed === 1 ? 'piece' : 'pieces';
   await gh.write(file.content, file.sha, `Update ${changed} ${noun} of copy via the edit page`);
   return `Saved ${changed} ${noun} of copy.`;
+}
+
+/** Put the content file as it was at an earlier commit back on the branch, as a new commit. */
+async function restore(gh, form) {
+  const version = form.get('version') || '';
+  if (!/^[0-9a-f]{7,40}$/.test(version)) throw new Error('That version could not be found.');
+  const old = await gh.readText(version);
+  const current = await gh.read();
+  if (old.text === current.text) return 'The draft site already has that version.';
+  const when = form.get('when') || version.slice(0, 7);
+  await gh.writeText(old.text, current.sha, `Restore the text from ${when} via the edit page`);
+  return `Restored the text from ${when}.`;
 }
 
 /** Set obj["a"]["b"]["0"]["c"] for the key "a.b.0.c", but only where a string already exists
@@ -109,19 +124,26 @@ function github(cfg) {
     return res.status === 204 ? null : res.json();
   }
   const file = `/contents/${cfg.CONTENT_PATH}`;
-  return {
+  const api = {
+    async readText(ref) {
+      const f = await call('GET', `${file}?ref=${ref}`);
+      return { text: fromBase64(f.content), sha: f.sha };
+    },
     async read() {
-      const f = await call('GET', `${file}?ref=${cfg.BRANCH}`);
-      return { content: JSON.parse(fromBase64(f.content)), sha: f.sha };
+      const f = await api.readText(cfg.BRANCH);
+      return { content: JSON.parse(f.text), text: f.text, sha: f.sha };
+    },
+    writeText(text, sha, message) {
+      return call('PUT', file, { message, sha, branch: cfg.BRANCH, content: toBase64(text) });
     },
     write(content, sha, message) {
-      const text = JSON.stringify(content, null, 2) + '\n';
-      return call('PUT', file, { message, sha, branch: cfg.BRANCH, content: toBase64(text) });
+      return api.writeText(JSON.stringify(content, null, 2) + '\n', sha, message);
     },
     dispatch() {
       return call('POST', `/actions/workflows/${cfg.PUBLISH_WORKFLOW}/dispatches`, { ref: cfg.BRANCH });
     },
   };
+  return api;
 }
 
 function authorized(request, password) {

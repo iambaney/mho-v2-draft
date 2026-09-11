@@ -1,24 +1,52 @@
 ---
-/** The edit page: the home page with every piece of copy as a form field.
+/** The edit page: the home page with every piece of copy as a form field, plus a Versions
+ *  panel for going back to an earlier version of the text.
  *  Built into the draft site only; the deploy workflow leaves it out of the live site.
- *  Save and Publish post to the relay (relay/relay.js), which commits to the draft branch. */
+ *  Save, Publish and Restore post to the relay (relay/relay.js), which commits to the draft branch. */
 import Base from '../layouts/Base.astro';
 import Home from '../components/Home.astro';
 import home from '../../content/home.json';
+import { listVersions } from '../lib/versions';
 import '../styles/edit.css';
 const relay = (process.env.RELAY_URL || 'http://localhost:8787').replace(/\/+$/, '');
 const sha = process.env.CONTENT_SHA ?? '';   // hash of the content file this page was built from
+const versions = listVersions();             // newest first; the first one is what this page shows
 ---
 <Base title={`Editing ${home.site.name}`}>
-  <form method="post" action={`${relay}/save`}>
-    <div class="edit-bar">
+  <div class="edit-layout">
+    <header class="edit-bar">
       <p>Editing the draft site. Click any text to change it. <b>Save</b> keeps your changes on the draft site; <b>Publish</b> puts the draft site live.</p>
       <div class="edit-actions">
-        <button type="submit">Save</button>
-        <button type="submit" class="primary" formaction={`${relay}/publish`}>Publish</button>
+        <details class="versions">
+          <summary>Versions</summary>
+          <div class="versions-panel">
+            {versions.length > 1 && (
+              <form method="post" action={`${relay}/restore`} class="undo">
+                <input type="hidden" name="version" value={versions[1].sha} />
+                <input type="hidden" name="when" value={versions[1].when} />
+                <button type="submit">Undo the latest change</button>
+              </form>
+            )}
+            {versions.length === 0 && <p class="v-note">No history is available in this build.</p>}
+            {versions.map((v, i) => (
+              <form method="post" action={`${relay}/restore`} class="version">
+                <p class="v-when">{v.when}</p>
+                <p class="v-meta">{v.source}{v.live && <span class="v-tag">Live now</span>}{i === 0 && <span class="v-tag">On the draft site</span>}</p>
+                <p class="v-what">{v.summary}</p>
+                <input type="hidden" name="version" value={v.sha} />
+                <input type="hidden" name="when" value={v.when} />
+                {i > 0 && <button type="submit">Restore this version</button>}
+              </form>
+            ))}
+          </div>
+        </details>
+        <button type="submit" form="edit">Save</button>
+        <button type="submit" form="edit" class="primary" formaction={`${relay}/publish`}>Publish</button>
       </div>
-    </div>
-    <input type="hidden" name="sha" value={sha} />
-    <Home edit />
-  </form>
+    </header>
+    <form id="edit" method="post" action={`${relay}/save`}>
+      <input type="hidden" name="sha" value={sha} />
+      <Home edit />
+    </form>
+  </div>
 </Base>
