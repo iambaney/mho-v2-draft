@@ -29,9 +29,17 @@ Edits to `content/home.yaml`, the stylesheets, or the components show up in the 
 
 Two branches, two sites:
 
-- `draft` builds to the preview site: https://iambaney.github.io/mho-v2-draft/draft/ (content edits land here first)
-- `main` builds to the live site: https://iambaney.github.io/mho-v2-draft/ (changes only when `draft` is merged into it)
+- `draft` builds to the preview site: https://iambaney.github.io/mho-v2-draft/draft/ . Every change lands here first.
+- `main` builds to the live site: https://iambaney.github.io/mho-v2-draft/ . It changes only when `draft` is published.
 
-Pushing either branch runs the workflow in `.github/workflows/`, which builds the site and uploads `dist/`. The GitHub Pages workflow is the proof of concept; `deploy-dreamhost.yml.example` is the same workflow with the upload step pointed at Dreamhost.
+Three ways in, one flow: make the change on `draft`, look at it on the preview site, then publish.
+
+- **Code.** Edit, push to `draft`, check the preview, then run the Publish workflow: `gh workflow run publish.yml`, or the "Run workflow" button on the Actions tab.
+- **No code.** [Pages CMS](https://app.pagescms.org) shows `content/home.yaml` as a form with plain labels, saves to `draft`, and has a Publish button. `.pages.yml` describes the form. Editors are invited by email and do not need a GitHub account.
+- **AI agents.** They read `AGENTS.md`, which describes the same flow and the rules of the codebase.
+
+Publish is `.github/workflows/publish.yml`: it merges `draft` into `main` and runs the deploy for the live site.
+
+Pushing either branch runs the deploy workflow, which builds the site and uploads `dist/`. The GitHub Pages workflow is the proof of concept; `deploy-dreamhost.yml.example` is the same workflow with the upload step pointed at Dreamhost.
 
 `dist/` is the whole website. It runs on any web host with no build tools installed.

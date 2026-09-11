@@ -1,6 +1,7 @@
 # Proof-of-concept deploy: both branches build to one GitHub Pages site.
 #   main  -> https://<user>.github.io/<repo>/
 #   draft -> https://<user>.github.io/<repo>/draft/
+# Runs on every push to either branch, and when publish.yml starts it for main.
 # The Dreamhost version of this file (deploy-dreamhost.yml.example) is identical
 # up to the last step.
 name: Build and deploy to GitHub Pages

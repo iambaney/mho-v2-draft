@@ -1,6 +1,7 @@
 # Production deploy. When Dreamhost access is set up: rename this file to
-# deploy-dreamhost.yml and delete deploy-pages.yml. Everything before the last
-# step is the same as the GitHub Pages workflow; only the upload changes.
+# deploy-dreamhost.yml, delete deploy-pages.yml, and set DEPLOY_WORKFLOW in
+# publish.yml to deploy-dreamhost.yml. Everything before the last step is the
+# same as the GitHub Pages workflow; only the upload changes.
 #
 # Secrets to add on the GitHub repo (Settings -> Secrets and variables -> Actions):
 #   DH_HOST        the Dreamhost server, e.g. iad1-shared-b8-99.dreamhost.com
@@ -44,8 +45,8 @@ jobs:
           fi
 
       # Plain rsync over SSH: no third-party action, nothing to audit but these six lines.
-      # --delete makes the docroot an exact copy of dist/, so anything that must live in the
-      # docroot but not in the repo (an .htaccess for the draft password) goes in public/ instead.
+      # --delete makes the docroot an exact copy of dist/. The one exception is .htaccess,
+      # which is left alone so a password on the draft site can live on the server only.
       - name: Upload dist/ to Dreamhost
         env:
           SSH_KEY: ${{ secrets.DH_SSH_KEY }}
@@ -57,4 +58,4 @@ jobs:
           printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
-          rsync -az --delete -e "ssh -i ~/.ssh/deploy_key" dist/ "$USER@$HOST:$DIR"
+          rsync -az --delete --exclude .htaccess -e "ssh -i ~/.ssh/deploy_key" dist/ "$USER@$HOST:$DIR"

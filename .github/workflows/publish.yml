@@ -1,0 +1,47 @@
+# Publish: merge draft into main and deploy the live site.
+# Started from the Actions tab ("Run workflow"), from the terminal (gh workflow run publish.yml),
+# or from the Publish button in Pages CMS. Nobody pushes to main by hand.
+#
+# A push made with the workflow's own token does not start other workflows, so the last step
+# starts the deploy explicitly. If the deploy workflow file is renamed, change it here too.
+name: Publish draft to live
+
+on:
+  workflow_dispatch:
+    inputs:
+      payload:
+        description: Context sent by Pages CMS. Not used.
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+env:
+  DEPLOY_WORKFLOW: deploy-pages.yml
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Merge draft into main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git merge --no-edit origin/draft
+          git push origin main
+
+      - name: Deploy the live site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run "$DEPLOY_WORKFLOW" --ref main
