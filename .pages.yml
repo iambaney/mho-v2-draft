@@ -1,0 +1,128 @@
+# Pages CMS (https://pagescms.org) reads this file and shows content/home.yaml as a form,
+# with a Publish button. Field order here is the order in the form.
+#
+# Setup, once: connect the repo at https://app.pagescms.org (sign in with GitHub, pick the
+# draft branch), then invite editors by email. Editors do not need a GitHub account.
+# Saves are commits to draft; the Publish button runs .github/workflows/publish.yml.
+
+media:
+  input: public/images
+  output: /images
+
+settings:
+  merge: true   # keep any keys in the content file that this form does not know about
+
+actions:
+  - name: publish
+    label: Publish to the live site
+    workflow: publish.yml
+    ref: current
+
+content:
+  - name: home
+    label: Home page
+    type: file
+    path: content/home.yaml
+    fields:
+      - name: site
+        label: Site
+        type: object
+        fields:
+          - { name: name, label: Site name, type: string }
+          - { name: domain, label: Domain, type: string }
+          - { name: phone_display, label: "Phone number, as shown", type: string }
+          - name: phone_tel
+            label: Phone number for tap-to-call
+            description: "+1 and the ten digits, no spaces or dashes."
+            type: string
+          - { name: address, label: Address, type: string }
+          - { name: practitioner, label: Practitioner, type: string }
+
+      - name: nav
+        label: Navigation
+        type: object
+        fields:
+          - name: links
+            label: Links
+            type: object
+            list: true
+            fields:
+              - { name: label, label: Text, type: string }
+              - { name: href, label: Goes to, description: 'A page address. "#" means nowhere yet.', type: string }
+
+      - name: hero
+        label: Top of the page
+        type: object
+        fields:
+          - { name: eyebrow, label: Small line above the headline, type: string }
+          - { name: headline, label: Headline, type: string }
+          - { name: subhead, label: Paragraph under the headline, type: text }
+          - name: primary_cta
+            label: Main button
+            type: object
+            fields:
+              - { name: label, label: Text, type: string }
+              - { name: href, label: Goes to, type: string }
+          - name: secondary_cta
+            label: Second button
+            type: object
+            fields:
+              - { name: label, label: Text, type: string }
+              - { name: href, label: Goes to, type: string }
+          - { name: review_line, label: Review line, description: The first word is shown in bold., type: string }
+          - { name: image, label: Photo, type: image }
+          - { name: image_alt, label: Photo description, description: Read aloud by screen readers., type: string }
+
+      - name: stats
+        label: Stat cards
+        type: object
+        list: true
+        fields:
+          - { name: value, label: Number, type: string }
+          - { name: label, label: Label, type: string }
+          - { name: stars, label: Show five stars above the number, type: boolean }
+
+      - name: testimonials
+        label: Testimonials
+        type: object
+        fields:
+          - { name: heading, label: Heading, type: string }
+          - { name: count_line, label: Review count line, description: The first word is shown in bold., type: string }
+          - name: items
+            label: Reviews
+            type: object
+            list: true
+            fields:
+              - { name: pullquote, label: Pull quote, description: Include the quote marks., type: string }
+              - { name: body, label: Full review, type: text }
+              - { name: attribution, label: Reviewer, type: string }
+
+      - name: meet
+        label: Meet Anya
+        type: object
+        fields:
+          - { name: eyebrow, label: Small line above the headline, type: string }
+          - { name: headline, label: Headline, type: string }
+          - { name: paragraphs, label: Paragraphs, type: text, list: true }
+          - name: link
+            label: Link
+            type: object
+            fields:
+              - { name: label, label: Text, type: string }
+              - { name: href, label: Goes to, type: string }
+          - { name: image, label: Portrait, type: image }
+          - { name: image_alt, label: Portrait description, description: Read aloud by screen readers., type: string }
+
+      - name: quote
+        label: Quote band
+        type: object
+        fields:
+          - { name: text, label: Quote, type: text }
+          - { name: attribution, label: Attribution, type: string }
+
+      - name: footer
+        label: Footer
+        type: object
+        fields:
+          - { name: line_1, label: Left side, type: string }
+          - { name: line_2, label: Right side, type: string }
