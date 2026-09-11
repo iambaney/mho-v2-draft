@@ -1,0 +1,11 @@
+---
+import Stars from './Stars.astro';
+interface Props { pullquote: string; body: string; attribution: string }
+const { pullquote, body, attribution } = Astro.props;
+---
+<figure class="tcard">
+  <Stars small />
+  <blockquote>{pullquote}</blockquote>
+  <p class="tfull">{body}</p>
+  <figcaption>{attribution}</figcaption>
+</figure>

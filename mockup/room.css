@@ -1,0 +1,164 @@
+/* Extracted from the artifact: tokens + shared .cpt rules + .d3 (The Room) rules.
+   Presentation-page chrome (.mast, .dir, .plate, .specs, .ask, .end) and the .d1/.d2 concepts were removed.
+   original-all.css is the untouched stylesheet if anything looks off. */
+
+:root{
+  --wall:#22332A; --wall-2:#1B2922; --wall-3:#2C4034;
+  --wall-line:rgba(240,227,208,.15);
+  --wall-ink:#E8E1D3; --wall-dim:#A3B0A4; --wall-gold:#CFA470;
+  --plate-shadow:0 24px 60px rgba(0,0,0,.42),0 2px 0 rgba(255,255,255,.04) inset;
+
+  /* ---- MHO tokens v1.1 (v1.0 + the three contrast fixes) ---- */
+  --sand:#F0E3D0; --sand-light:#F7ECDD; --cream:#FBF6EC;
+  --ink:#2A241D; --ink-soft:#4A3A2C;
+  --clay:#C07640; --clay-deep:#9F6134;          /* v1.1: stat band */
+  --terracotta:#B0592B; --terracotta-deep:#96481F; /* v1.1: link role */
+  --rust:#8A4520;
+  --forest:#46684B; --forest-deep:#31493A; --brown:#8B5F3C; /* v1.1: pill border */
+
+  --f-disp:'Fraunces',Georgia,'Times New Roman',serif;
+  --f-body:'Nunito Sans','Segoe UI',system-ui,sans-serif;
+  --f-mono:ui-monospace,'SF Mono',Menlo,monospace;
+  --col:1180px;
+}
+*,*::before,*::after{box-sizing:border-box}
+img{max-width:100%; display:block}
+.slot{position:relative}
+/* .slot::after was a mockup-only "photo slot" label drawn from data-slot. Dropped on purpose.
+   Keep it during the proof of concept if you want the labels to match the artifact exactly:
+.slot::after{content:attr(data-slot); position:absolute; left:12px; bottom:12px; z-index:3;
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.06em; color:#fff;
+  background:rgba(34,51,42,.82); padding:4px 9px; border-radius:4px; max-width:calc(100% - 24px)}
+*/
+.warm{filter:saturate(.9) contrast(1.03)}
+
+.cpt{background:var(--sand); color:var(--ink); font-family:var(--f-body);
+  font-size:16px; line-height:1.65; container-type:inline-size}
+.cpt *{box-sizing:border-box}
+/* ================= shared concept components ================= */
+.cpt .nav{display:flex; align-items:center; justify-content:space-between;
+  padding:16px 34px; border-bottom:1px solid rgba(139,95,60,.18)}
+.cpt .nav-l{display:flex; align-items:center; gap:11px}
+.cpt .nav-mark{width:26px; height:33px; flex:none}
+.cpt .nav-name{font-family:var(--f-disp); font-size:16px; font-weight:500; color:var(--forest-deep);
+  letter-spacing:.005em}
+.cpt .nav-r{display:flex; align-items:center; gap:22px}
+.cpt .nav-lnk{font-size:12.5px; font-weight:600; color:var(--ink-soft); text-decoration:none}
+.cpt .nav-tel{font-size:12.5px; font-weight:700; color:var(--terracotta-deep); text-decoration:none}
+.cpt .btn{
+  display:inline-block; background:var(--terracotta-deep); color:#fff; text-decoration:none;
+  font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  padding:15px 30px; border-radius:6px; border:none; cursor:pointer;
+}
+.cpt .btn-2{
+  display:inline-block; background:transparent; color:var(--forest-deep); text-decoration:none;
+  border:1.5px solid var(--forest-deep); font-size:12px; font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase; padding:13.5px 28px; border-radius:6px;
+}
+.cpt .eyebrow{font-size:11px; font-weight:800; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--terracotta-deep); margin:0 0 16px}
+.cpt h1,.cpt h2,.cpt h3{font-family:var(--f-disp); font-optical-sizing:auto;
+  font-weight:400; letter-spacing:-.012em; text-wrap:balance; margin:0}
+.cpt p{margin:0}
+.cpt .quote{
+  background:var(--forest-deep); color:#EDE7DA; font-family:var(--f-disp); font-style:italic;
+  text-align:center; padding:64px 34px; font-size:clamp(1.25rem,2.6vw,1.75rem); line-height:1.45;
+}
+.cpt .quote cite{display:block; font-family:var(--f-body); font-style:normal; font-size:11px;
+  font-weight:800; letter-spacing:.22em; text-transform:uppercase;
+  color:rgba(237,231,218,.6); margin-top:22px}
+.cpt .foot{background:var(--forest-deep); color:rgba(237,231,218,.72); padding:30px 34px;
+  font-size:12.5px; display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  border-top:1px solid rgba(237,231,218,.13)}
+/* ---------- D3 The Room ---------- */
+.d3 .hero{position:relative; min-height:720px; display:flex; align-items:flex-end;
+  padding:34px; overflow:hidden; background:var(--forest-deep)}
+.d3 .hero-img{position:absolute; top:0; bottom:0; left:0; right:-6%}
+.d3 .hero-img img{width:100%; height:100%; object-fit:cover; object-position:50% 56%;
+  filter:brightness(1.1) contrast(1.03) saturate(.97)}
+.d3 .scrim{position:absolute; inset:0;
+  background:linear-gradient(95deg,rgba(24,33,26,.9) 0%,rgba(34,46,35,.56) 46%,rgba(52,62,44,.08) 100%)}
+/* gentle warm vignette holds the eye on the chair */
+.d3 .scrim::after{content:""; position:absolute; inset:0;
+  background:linear-gradient(270deg,rgba(90,52,26,.2) 0%,rgba(90,52,26,0) 20%)}
+.d3 .hero-in{position:relative; z-index:2; max-width:560px; padding:36px 0 26px}
+.d3 .hero h1{font-size:clamp(2.1rem,4.6cqw,3.2rem); line-height:1.08; color:#FBF6EC; margin-bottom:18px}
+.d3 .hero .sub{color:rgba(251,246,236,.88); font-size:1.0625rem; max-width:40ch;
+  margin-bottom:28px; line-height:1.6}
+.d3 .hero .eyebrow{color:#E0B383}
+.d3 .ctas{display:flex; gap:13px; flex-wrap:wrap}
+.d3 .btn-ghost{display:inline-block; background:transparent; color:#FBF6EC; text-decoration:none;
+  border:1.5px solid rgba(251,246,236,.62); font-size:12px; font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase; padding:13.5px 28px; border-radius:6px}
+.d3 .proof{display:grid; grid-template-columns:repeat(4,1fr); gap:13px; padding:34px;
+  background:var(--sand); margin-top:-42px; position:relative; z-index:3}
+.d3 .stat{background:var(--cream); border-radius:12px; padding:22px 16px; text-align:center;
+  box-shadow:0 6px 24px rgba(42,36,29,.12)}
+.d3 .stat b{display:block; font-family:var(--f-disp); font-size:1.7rem; font-weight:500;
+  color:var(--terracotta-deep); line-height:1.1}
+.d3 .stat span{display:block; font-size:10px; font-weight:700; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--ink-soft); margin-top:8px}
+.d3 .meet{display:grid; grid-template-columns:.85fr 1.15fr; gap:48px; align-items:center;
+  padding:64px 34px 76px; background:var(--sand)}
+.d3 .meet .arch{border-radius:20px; overflow:hidden; aspect-ratio:4/5;
+  background:var(--sand-light); box-shadow:0 6px 24px rgba(42,36,29,.12)}
+.d3 .meet .arch img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.d3 .meet h2{font-size:clamp(1.55rem,3.1cqw,2rem); color:var(--ink); margin-bottom:16px}
+.d3 .meet p{font-size:15.5px; color:var(--ink-soft); line-height:1.7; margin-bottom:16px}
+.d3 .meet a{color:var(--terracotta-deep); font-weight:700; text-decoration:none;
+  border-bottom:1.5px solid rgba(150,72,31,.35)}
+/* ---------- proof: stars, review line, testimonial cards ---------- */
+.cpt .stars,.cpt .stars-sm{display:inline-flex; gap:2px; color:var(--clay-deep); flex:none}
+.cpt .star,.cpt .stars svg,.cpt .stars-sm svg{width:15px; height:15px; display:block}
+.cpt .stars-sm svg{width:13px; height:13px}
+.cpt .revline{display:flex; align-items:center; gap:10px; font-size:13.5px; color:var(--ink-soft);
+  margin-top:18px; flex-wrap:wrap}
+.cpt .revline b{color:var(--ink); font-weight:800}
+.cpt .revline.on-dark{color:rgba(251,246,236,.9)}
+.cpt .revline.on-dark b{color:#fff}
+.cpt .revline.on-dark .stars{color:#E7B678}
+.cpt .tcard{background:var(--cream); border-radius:12px; box-shadow:0 2px 10px rgba(42,36,29,.08);
+  padding:26px 24px; margin:0; display:flex; flex-direction:column; gap:12px}
+.cpt .tcard blockquote{margin:0; font-family:var(--f-disp); font-size:1.18rem; line-height:1.34;
+  color:var(--forest-deep); font-weight:500; letter-spacing:-.01em}
+.cpt .tcard .tfull{font-size:14px; line-height:1.66; color:var(--ink-soft)}
+.cpt .tcard figcaption{font-size:10.5px; font-weight:800; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--terracotta-deep); margin-top:auto}
+.cpt .trow{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+.cpt .tsec{padding:76px 34px; background:var(--sand-light)}
+.cpt .tsec-h{display:flex; align-items:baseline; justify-content:space-between; gap:20px;
+  flex-wrap:wrap; margin-bottom:34px}
+.cpt .tsec-h h2{font-size:clamp(1.6rem,3.2cqw,2rem); color:var(--ink)}
+.cpt .tsec-h .rev{display:flex; align-items:center; gap:9px; font-size:13px; color:var(--ink-soft)}
+.cpt .tsec-h .rev b{color:var(--ink); font-weight:800}
+/* D3: reviews sit in the lifted proof row */
+.d3 .stat.rev-stat{background:var(--forest-deep)}
+.d3 .stat.rev-stat b{color:#FBF6EC}
+.d3 .stat.rev-stat span{color:rgba(251,246,236,.72)}
+.d3 .stat .stars-sm{justify-content:center; color:#E7B678; margin-bottom:7px; display:flex}
+
+/* ---- responsive rules (container queries, since the concept rendered inside a resizable plate) ---- */
+@container (max-width:700px){
+  .cpt .nav{padding:14px 20px}
+  .cpt .nav-lnk{display:none}
+}
+@container (max-width:800px){
+  .d3 .hero{min-height:560px; padding:22px}
+  .d3 .hero-img{right:0}
+  .d3 .hero-img img{object-position:50% 42%}
+  /* the lifted cards must not clip the review line on a phone */
+  .d3 .hero-in{padding-bottom:54px}
+  .d3 .proof{margin-top:-22px}
+}
+@container (max-width:800px){
+  .d3 .proof{grid-template-columns:repeat(2,1fr); padding:22px}
+}
+@container (max-width:800px){
+  .d3 .meet{grid-template-columns:1fr; gap:28px; padding:44px 22px 56px}
+}
+@container (max-width:860px){
+  .cpt .trow{grid-template-columns:1fr}
+}
+@container (max-width:800px){
+  .cpt .tsec{padding:52px 22px}
+}

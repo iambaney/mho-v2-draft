@@ -1,0 +1,80 @@
+# Home page copy for myhealingoasis.net, extracted verbatim from "The Room" (direction 03)
+# in the artifact "Hearth, Threshold, Room" (18 August 2026 version).
+#
+# Every word on the home page lives in this file. Edit it here and the site rebuilds.
+# Punctuation, dashes and curly quotes are exactly as they appear in the mockup.
+# Phone and address are placeholders until launch; replace them with the real values then.
+
+site:
+  name: My Healing Oasis
+  domain: myhealingoasis.net
+  phone_display: XXX-XXX-XXXX
+  phone_tel: "+1XXXXXXXXXX"
+  address: 1234 Example St, Suite 100 · Portland, OR
+  practitioner: Anya Mayer, CHT
+
+nav:
+  links:
+    - label: About Anya
+      href: "#"
+    - label: How She Helps
+      href: "#"
+
+hero:
+  eyebrow: Hypnotherapy · Portland, Oregon
+  headline: Feel safe enough to trust yourself again.
+  subhead: Hypnotherapy and mind-body healing with Anya Mayer, CHT — calming the nervous system, releasing old patterns, rebuilding self-trust.
+  primary_cta:
+    label: Book a free 20-minute consult
+    href: "#"
+  secondary_cta:
+    label: See the space
+    href: "#"
+  review_line: 90+ five-star Google reviews   # the first word is shown in bold
+  image: /images/room-hero.jpg
+  image_alt: The treatment room at My Healing Oasis
+
+stats:
+  - value: "25+"
+    label: Years of Experience
+  - value: "10,000+"
+    label: Clients Helped
+  - value: "90+"
+    label: 5-Star Google Reviews
+    stars: true
+  - value: "1:1"
+    label: Personalized Care
+
+testimonials:
+  heading: What people say afterwards
+  count_line: 90+ five-star reviews on Google   # the first word is shown in bold
+  items:
+    - pullquote: "“I was able to have several breakthroughs in a matter of just a few sessions.”"
+      body: I had an incredibly positive experience with Anya. Anya always made me feel at ease and at peace. I found myself genuinely looking forward to each session, and felt energized and lighter after. I highly recommend working with her.
+      attribution: — Tory, Google review
+    - pullquote: "“She immediately put me at ease.”"
+      body: I sought out Anya’s help to try and alleviate some anxiety issues I was dealing with in my workplace. Over the next several sessions she taught me some invaluable tools to deal with my issue. I am going to continue to seek Anya out in the future when I need some calmness amongst the chaos.
+      attribution: — Monica, Google review
+    - pullquote: "“There is something in Anya’s work that just ‘clicks’”"
+      body: Working with Anya has had a profound effect on reducing my anxiety and stress response. As someone who has used several other therapies and practices — Anya is a compassionate, knowledgeable and intuitive healer, and I am very grateful to have found My Healing Oasis.
+      attribution: — Lauren, Google review
+
+meet:
+  eyebrow: Meet Anya
+  headline: You are not broken. You may be running an old pattern.
+  paragraphs:
+    - Anya Mayer, CHT has spent 25 years helping people quiet an overwhelmed nervous system and loosen the grip of patterns that once protected them. She combines hypnotherapy, NLP, and mind-body awareness — roots that go back to her work as a massage therapist.
+    - "Every engagement starts the same way: a free 20-minute conversation, no pressure, to find out whether this is the right fit."
+  link:
+    label: Read Anya’s story →
+    href: "#"
+  image: /images/anya-portrait.jpg
+  image_alt: Anya Mayer
+
+quote:
+  text: “The nervous system heals within safety, not through force.”
+  attribution: Anya Mayer, CHT
+
+footer:
+  line_1: 1234 Example St, Suite 100 · Portland, OR
+  line_2: XXX-XXX-XXXX · myhealingoasis.net

@@ -1,0 +1,30 @@
+---
+import Stars from './Stars.astro';
+import { withBase } from '../lib/url';
+import { splitLead } from '../lib/text';
+interface Props {
+  eyebrow: string; headline: string; subhead: string;
+  primary_cta: { label: string; href: string };
+  secondary_cta: { label: string; href: string };
+  review_line: string; image: string; image_alt: string;
+}
+const { eyebrow, headline, subhead, primary_cta, secondary_cta, review_line, image, image_alt } = Astro.props;
+const [count, rest] = splitLead(review_line);
+---
+<div class="hero">
+  <div class="hero-img"><img alt={image_alt} class="warm" src={withBase(image)} /></div>
+  <div class="scrim"></div>
+  <div class="hero-in">
+    <p class="eyebrow">{eyebrow}</p>
+    <h1>{headline}</h1>
+    <p class="sub">{subhead}</p>
+    <div class="ctas">
+      <a class="btn" href={withBase(primary_cta.href)}>{primary_cta.label}</a>
+      <a class="btn-ghost" href={withBase(secondary_cta.href)}>{secondary_cta.label}</a>
+    </div>
+    <p class="revline on-dark">
+      <Stars label="Five out of five stars" />
+      <span><b>{count}</b>{' ' + rest}</span>
+    </p>
+  </div>
+</div>

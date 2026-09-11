@@ -1,0 +1,8 @@
+---
+import Stat from './Stat.astro';
+interface Props { stats: { value: string; label: string; stars?: boolean }[] }
+const { stats } = Astro.props;
+---
+<div class="proof">
+  {stats.map((s) => <Stat {...s} />)}
+</div>

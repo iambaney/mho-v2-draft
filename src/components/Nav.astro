@@ -1,0 +1,19 @@
+---
+import Mark from './Mark.astro';
+import { withBase } from '../lib/url';
+interface Props {
+  site: { name: string; phone_display: string; phone_tel: string };
+  links: { label: string; href: string }[];
+}
+const { site, links } = Astro.props;
+---
+<div class="nav">
+  <div class="nav-l">
+    <Mark />
+    <span class="nav-name">{site.name}</span>
+  </div>
+  <div class="nav-r">
+    {links.map((l) => <a class="nav-lnk" href={withBase(l.href)}>{l.label}</a>)}
+    <a class="nav-tel" href={`tel:${site.phone_tel}`}>{site.phone_display}</a>
+  </div>
+</div>

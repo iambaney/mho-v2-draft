@@ -1,0 +1,10 @@
+---
+import Stars from './Stars.astro';
+interface Props { value: string; label: string; stars?: boolean }
+const { value, label, stars = false } = Astro.props;
+---
+<div class:list={['stat', { 'rev-stat': stars }]}>
+  {stars && <Stars small />}
+  <b>{value}</b>
+  <span>{label}</span>
+</div>

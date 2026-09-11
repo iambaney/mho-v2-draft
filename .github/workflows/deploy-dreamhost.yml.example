@@ -1,0 +1,60 @@
+# Production deploy. When Dreamhost access is set up: rename this file to
+# deploy-dreamhost.yml and delete deploy-pages.yml. Everything before the last
+# step is the same as the GitHub Pages workflow; only the upload changes.
+#
+# Secrets to add on the GitHub repo (Settings -> Secrets and variables -> Actions):
+#   DH_HOST        the Dreamhost server, e.g. iad1-shared-b8-99.dreamhost.com
+#   DH_USER        the Dreamhost shell user
+#   DH_SSH_KEY     private half of a dedicated deploy keypair (no passphrase)
+#   DH_PROD_PATH   docroot for myhealingoasis.net,        e.g. /home/<user>/myhealingoasis.net/
+#   DH_DRAFT_PATH  docroot for draft.myhealingoasis.net,  e.g. /home/<user>/draft.myhealingoasis.net/
+name: Build and deploy to Dreamhost
+
+on:
+  push:
+    branches: [main, draft]
+  workflow_dispatch:
+
+concurrency:
+  group: dreamhost-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build   # BASE_PATH unset, so the site is built for "/"
+
+      - name: Pick docroot for this branch
+        id: target
+        run: |
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            echo "dir=${{ secrets.DH_PROD_PATH }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "dir=${{ secrets.DH_DRAFT_PATH }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Plain rsync over SSH: no third-party action, nothing to audit but these six lines.
+      # --delete makes the docroot an exact copy of dist/, so anything that must live in the
+      # docroot but not in the repo (an .htaccess for the draft password) goes in public/ instead.
+      - name: Upload dist/ to Dreamhost
+        env:
+          SSH_KEY: ${{ secrets.DH_SSH_KEY }}
+          HOST: ${{ secrets.DH_HOST }}
+          USER: ${{ secrets.DH_USER }}
+          DIR: ${{ steps.target.outputs.dir }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+          rsync -az --delete -e "ssh -i ~/.ssh/deploy_key" dist/ "$USER@$HOST:$DIR"

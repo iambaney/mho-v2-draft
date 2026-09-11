@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import Proof from '../components/Proof.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Meet from '../components/Meet.astro';
+import QuoteBand from '../components/QuoteBand.astro';
+import Footer from '../components/Footer.astro';
+import home from '../../content/home.yaml';
+---
+<Base title={home.site.name}>
+  <div class="cpt d3">
+    <Nav site={home.site} links={home.nav.links} />
+    <Hero {...home.hero} />
+    <Proof stats={home.stats} />
+    <Testimonials {...home.testimonials} />
+    <Meet {...home.meet} />
+    <QuoteBand {...home.quote} />
+    <Footer {...home.footer} />
+  </div>
+</Base>

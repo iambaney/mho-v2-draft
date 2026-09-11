@@ -1,0 +1,17 @@
+---
+import { withBase } from '../lib/url';
+interface Props {
+  eyebrow: string; headline: string; paragraphs: string[];
+  link: { label: string; href: string }; image: string; image_alt: string;
+}
+const { eyebrow, headline, paragraphs, link, image, image_alt } = Astro.props;
+---
+<div class="meet">
+  <div class="arch"><img alt={image_alt} class="warm" src={withBase(image)} /></div>
+  <div>
+    <p class="eyebrow">{eyebrow}</p>
+    <h2>{headline}</h2>
+    {paragraphs.map((p) => <p>{p}</p>)}
+    <a href={withBase(link.href)}>{link.label}</a>
+  </div>
+</div>

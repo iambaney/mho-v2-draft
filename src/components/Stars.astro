@@ -1,0 +1,11 @@
+---
+/** Five stars. `small` uses the .stars-sm size; `label` adds an accessible name (role="img"). */
+interface Props { small?: boolean; label?: string }
+const { small = false, label } = Astro.props;
+const d = 'M10 1.5l2.47 5.2 5.53.78-4 4.03.95 5.72L10 14.55 5.05 17.23 6 11.51l-4-4.03 5.53-.78L10 1.5z';
+---
+<span class={small ? 'stars-sm' : 'stars'} role={label ? 'img' : undefined} aria-label={label}>
+  {[1, 2, 3, 4, 5].map(() => (
+    <svg aria-hidden="true" class="star" viewBox="0 0 20 20"><path d={d} fill="currentColor"></path></svg>
+  ))}
+</span>

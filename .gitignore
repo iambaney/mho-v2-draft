@@ -1,0 +1,11 @@
+# planning notes, not part of the site
+PLAN.md
+
+# build output and tooling
+node_modules/
+dist/
+.astro/
+npm-debug.log*
+
+# OS
+.DS_Store
