@@ -40,6 +40,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git merge --no-edit origin/draft
           git push origin main
+          # Now main contains everything on draft, so this is always a fast-forward.
+          # It keeps the two branches identical after a publish, even if something
+          # wrote to main directly.
+          git push origin main:draft
 
       - name: Deploy the live site
         env:
