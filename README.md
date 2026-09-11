@@ -43,18 +43,44 @@ Three ways in, one flow: make the change on `draft`, look at it on the preview s
 
 Publish is `.github/workflows/publish.yml`: it merges `draft` into `main`, runs the deploy for the live site, and brings `draft` level with `main`.
 
+Pushing either branch runs the deploy workflow, which builds the site and uploads `dist/`. The GitHub Pages workflow is the proof of concept; `deploy-dreamhost.yml.example` is the same workflow with the upload step pointed at Dreamhost.
+
+`dist/` is the whole website. It runs on any web host with no build tools installed.
+
 ## The edit page and the relay
 
 The edit page is plain HTML: one form, no JavaScript. Its Save and Publish buttons post to the relay, `relay/relay.js`, a dependency-free server of about 160 lines that reads the content file from GitHub, applies the changed fields, commits the result to `draft`, and for Publish starts the Publish workflow. It runs on Node, or unchanged on Cloudflare Workers or Deno.
 
-To run it on your own machine:
+Until it has a permanent home, the relay runs on your own machine, and the edit page on the draft site is built to post to `http://localhost:8787`. Browsers treat `localhost` as a secure origin, so that works from the public draft site without any warnings. No new token is needed: the GitHub CLI you are already signed in to has one with the right scopes, and `$(gh auth token)` hands it over.
 
 ```sh
-GITHUB_TOKEN=<token> GITHUB_REPO=iambaney/mho-v2-draft node relay/relay.js
+GITHUB_TOKEN=$(gh auth token) GITHUB_REPO=iambaney/mho-v2-draft node relay/relay.js
 ```
 
-The token is a fine-grained personal access token for this repo with Contents and Actions set to read and write. Browsers treat `localhost` as a secure origin, so the edit page on the draft site can post to a relay on your laptop. When the relay gets a permanent home, set the `RELAY_URL` repository variable (Settings, Secrets and variables, Actions, Variables) to its address and push; the edit page picks it up at the next build. `EDIT_PASSWORD` makes the browser ask for a password before saving.
+Settings the relay reads from its environment:
 
-Pushing either branch runs the deploy workflow, which builds the site and uploads `dist/`. The GitHub Pages workflow is the proof of concept; `deploy-dreamhost.yml.example` is the same workflow with the upload step pointed at Dreamhost.
+| Variable | What it is |
+|---|---|
+| `GITHUB_TOKEN` | Required. `$(gh auth token)` on your laptop. On a server, a dedicated fine-grained token for the repo with Contents and Actions set to read and write. |
+| `GITHUB_REPO` | Required. `owner/name`, currently `iambaney/mho-v2-draft`. |
+| `EDIT_PASSWORD` | Optional. Any string. When set, the browser asks for a password before saving (the user name is ignored). Off for the demo. |
+| `PORT` | Optional. Default `8787`. |
 
-`dist/` is the whole website. It runs on any web host with no build tools installed.
+When the relay moves to a server, set the `RELAY_URL` repository variable on GitHub (repo Settings, Secrets and variables, Actions, Variables tab, or `gh variable set RELAY_URL --body "https://…"`) to its address and re-run the draft deploy. The edit page picks it up at the next build. Until then leave it unset.
+
+## Demo day checklist
+
+1. Make sure local and remote agree: `git switch draft && git pull`.
+2. Start the relay in a terminal and leave it running:
+   ```sh
+   GITHUB_TOKEN=$(gh auth token) GITHUB_REPO=iambaney/mho-v2-draft node relay/relay.js
+   ```
+   It prints `Edit relay listening on http://localhost:8787`. Opening that address in a browser shows "The relay is running".
+3. Open the edit page: https://iambaney.github.io/mho-v2-draft/draft/edit/ . Click any text, change it, press **Save**. The confirmation page says how many pieces of copy were saved and returns to the editor after a minute; `gh run list --limit 3` shows the draft build in the meantime. When the page comes back the change is in it, and on the draft site: https://iambaney.github.io/mho-v2-draft/draft/ .
+4. Press **Publish**. About a minute later the live site shows it: https://iambaney.github.io/mho-v2-draft/ .
+5. The same change through the other doors, if useful:
+   - Pages CMS at https://app.pagescms.org : the same file as a form, its own Publish button, editors invited by email.
+   - Code or an agent: edit `content/home.json` on `draft`, push, then `gh workflow run publish.yml`. `AGENTS.md` is what an agent reads first.
+6. Show the trail: `git fetch && git log --oneline -6 origin/draft`. Every save is a commit that says where it came from.
+
+If something does not go through: `gh run list` shows the builds and `gh run view <run id> --log-failed` shows why one failed. The relay explains its own errors on the page it returns. A page that looks stale after a minute is usually the browser cache; reload it.
