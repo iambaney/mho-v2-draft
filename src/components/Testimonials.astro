@@ -1,20 +1,22 @@
 ---
 import Stars from './Stars.astro';
+import Text from './Text.astro';
 import TestimonialCard from './TestimonialCard.astro';
 import { splitLead } from '../lib/text';
 interface Props {
   heading: string; count_line: string;
   items: { pullquote: string; body: string; attribution: string }[];
+  edit?: boolean;
 }
-const { heading, count_line, items } = Astro.props;
+const { heading, count_line, items, edit = false } = Astro.props;
 const [count, rest] = splitLead(count_line);
 ---
 <div class="tsec">
   <div class="tsec-h">
-    <h2>{heading}</h2>
-    <span class="rev"><Stars label="Five out of five stars" /><b>{count}</b>{' ' + rest}</span>
+    <h2><Text k="testimonials.heading" v={heading} edit={edit} /></h2>
+    <span class="rev"><Stars label="Five out of five stars" />{edit ? <Text k="testimonials.count_line" v={count_line} edit /> : <><b>{count}</b>{' ' + rest}</>}</span>
   </div>
   <div class="trow">
-    {items.map((t) => <TestimonialCard {...t} />)}
+    {items.map((t, i) => <TestimonialCard {...t} k={`testimonials.items.${i}`} edit={edit} />)}
   </div>
 </div>

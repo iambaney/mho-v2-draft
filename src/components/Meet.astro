@@ -1,17 +1,20 @@
 ---
+import Text from './Text.astro';
 import { withBase } from '../lib/url';
 interface Props {
   eyebrow: string; headline: string; paragraphs: string[];
   link: { label: string; href: string }; image: string; image_alt: string;
+  edit?: boolean;
 }
-const { eyebrow, headline, paragraphs, link, image, image_alt } = Astro.props;
+const { eyebrow, headline, paragraphs, link, image, image_alt, edit = false } = Astro.props;
+const A = edit ? 'span' : 'a';
 ---
 <div class="meet">
   <div class="arch"><img alt={image_alt} class="warm" src={withBase(image)} /></div>
   <div>
-    <p class="eyebrow">{eyebrow}</p>
-    <h2>{headline}</h2>
-    {paragraphs.map((p) => <p>{p}</p>)}
-    <a href={withBase(link.href)}>{link.label}</a>
+    <p class="eyebrow"><Text k="meet.eyebrow" v={eyebrow} edit={edit} /></p>
+    <h2><Text k="meet.headline" v={headline} edit={edit} /></h2>
+    {paragraphs.map((p, i) => <p><Text k={`meet.paragraphs.${i}`} v={p} edit={edit} /></p>)}
+    <A href={edit ? undefined : withBase(link.href)}><Text k="meet.link.label" v={link.label} edit={edit} /></A>
   </div>
 </div>

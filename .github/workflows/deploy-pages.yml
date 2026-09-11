@@ -31,7 +31,7 @@ jobs:
 
       - run: npm ci
 
-      - name: Set base path for this branch
+      - name: Settings for this branch
         id: base
         run: |
           if [ "${GITHUB_REF_NAME}" = "main" ]; then
@@ -41,10 +41,17 @@ jobs:
             echo "path=/${GITHUB_REPOSITORY#*/}/draft/" >> "$GITHUB_OUTPUT"
             echo "dest=draft" >> "$GITHUB_OUTPUT"
           fi
+          echo "content_sha=$(git rev-parse HEAD:content/home.json)" >> "$GITHUB_OUTPUT"
 
       - run: npm run build
         env:
           BASE_PATH: ${{ steps.base.outputs.path }}
+          CONTENT_SHA: ${{ steps.base.outputs.content_sha }}   # lets the relay notice a stale edit page
+          RELAY_URL: ${{ vars.RELAY_URL }}                      # where Save and Publish go; unset means a relay on localhost
+
+      - name: Leave the edit page out of the live site
+        if: github.ref_name == 'main'
+        run: rm -rf dist/edit
 
       - uses: peaceiris/actions-gh-pages@v4
         with:

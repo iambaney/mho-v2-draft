@@ -1,0 +1,10 @@
+---
+/** One piece of copy from content/home.json.
+ *  Normally renders the text. On the edit page (edit=true) it renders a form field named after
+ *  the content key, which edit.css styles to look like the text it replaces. */
+interface Props { k: string; v: string; edit?: boolean }
+const { k, v, edit = false } = Astro.props;
+// Fallback height for browsers without CSS field-sizing; ignored where it is supported.
+const rows = Math.max(1, Math.ceil(v.length / 70));
+---
+{edit ? <textarea class="ed" name={k} rows={rows}>{v}</textarea> : v}

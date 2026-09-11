@@ -1,11 +1,12 @@
 ---
 import Stars from './Stars.astro';
-interface Props { pullquote: string; body: string; attribution: string }
-const { pullquote, body, attribution } = Astro.props;
+import Text from './Text.astro';
+interface Props { pullquote: string; body: string; attribution: string; k: string; edit?: boolean }
+const { pullquote, body, attribution, k, edit = false } = Astro.props;
 ---
 <figure class="tcard">
   <Stars small />
-  <blockquote>{pullquote}</blockquote>
-  <p class="tfull">{body}</p>
-  <figcaption>{attribution}</figcaption>
+  <blockquote><Text k={`${k}.pullquote`} v={pullquote} edit={edit} /></blockquote>
+  <p class="tfull"><Text k={`${k}.body`} v={body} edit={edit} /></p>
+  <figcaption><Text k={`${k}.attribution`} v={attribution} edit={edit} /></figcaption>
 </figure>

@@ -1,0 +1,24 @@
+---
+/** The edit page: the home page with every piece of copy as a form field.
+ *  Built into the draft site only; the deploy workflow leaves it out of the live site.
+ *  Save and Publish post to the relay (relay/relay.js), which commits to the draft branch. */
+import Base from '../layouts/Base.astro';
+import Home from '../components/Home.astro';
+import home from '../../content/home.json';
+import '../styles/edit.css';
+const relay = (process.env.RELAY_URL || 'http://localhost:8787').replace(/\/+$/, '');
+const sha = process.env.CONTENT_SHA ?? '';   // hash of the content file this page was built from
+---
+<Base title={`Editing ${home.site.name}`}>
+  <form method="post" action={`${relay}/save`}>
+    <div class="edit-bar">
+      <p>Editing the draft site. Click any text to change it. <b>Save</b> keeps your changes on the draft site; <b>Publish</b> puts the draft site live.</p>
+      <div class="edit-actions">
+        <button type="submit">Save</button>
+        <button type="submit" class="primary" formaction={`${relay}/publish`}>Publish</button>
+      </div>
+    </div>
+    <input type="hidden" name="sha" value={sha} />
+    <Home edit />
+  </form>
+</Base>

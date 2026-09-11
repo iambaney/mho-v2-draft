@@ -1,19 +1,22 @@
 ---
 import Mark from './Mark.astro';
+import Text from './Text.astro';
 import { withBase } from '../lib/url';
 interface Props {
   site: { name: string; phone_display: string; phone_tel: string };
   links: { label: string; href: string }[];
+  edit?: boolean;
 }
-const { site, links } = Astro.props;
+const { site, links, edit = false } = Astro.props;
+const A = edit ? 'span' : 'a';   // on the edit page, links are just editable labels
 ---
 <div class="nav">
   <div class="nav-l">
     <Mark />
-    <span class="nav-name">{site.name}</span>
+    <span class="nav-name"><Text k="site.name" v={site.name} edit={edit} /></span>
   </div>
   <div class="nav-r">
-    {links.map((l) => <a class="nav-lnk" href={withBase(l.href)}>{l.label}</a>)}
-    <a class="nav-tel" href={`tel:${site.phone_tel}`}>{site.phone_display}</a>
+    {links.map((l, i) => <A class="nav-lnk" href={edit ? undefined : withBase(l.href)}><Text k={`nav.links.${i}.label`} v={l.label} edit={edit} /></A>)}
+    <A class="nav-tel" href={edit ? undefined : `tel:${site.phone_tel}`}><Text k="site.phone_display" v={site.phone_display} edit={edit} /></A>
   </div>
 </div>

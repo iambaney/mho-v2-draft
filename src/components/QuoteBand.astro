@@ -1,5 +1,6 @@
 ---
-interface Props { text: string; attribution: string }
-const { text, attribution } = Astro.props;
+import Text from './Text.astro';
+interface Props { text: string; attribution: string; edit?: boolean }
+const { text, attribution, edit = false } = Astro.props;
 ---
-<div class="quote">{text}<cite>{attribution}</cite></div>
+<div class="quote"><Text k="quote.text" v={text} edit={edit} /><cite><Text k="quote.attribution" v={attribution} edit={edit} /></cite></div>

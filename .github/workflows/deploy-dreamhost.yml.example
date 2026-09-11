@@ -33,9 +33,7 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run build   # BASE_PATH unset, so the site is built for "/"
-
-      - name: Pick docroot for this branch
+      - name: Settings for this branch
         id: target
         run: |
           if [ "${GITHUB_REF_NAME}" = "main" ]; then
@@ -43,6 +41,16 @@ jobs:
           else
             echo "dir=${{ secrets.DH_DRAFT_PATH }}" >> "$GITHUB_OUTPUT"
           fi
+          echo "content_sha=$(git rev-parse HEAD:content/home.json)" >> "$GITHUB_OUTPUT"
+
+      - run: npm run build   # BASE_PATH unset, so the site is built for "/"
+        env:
+          CONTENT_SHA: ${{ steps.target.outputs.content_sha }}   # lets the relay notice a stale edit page
+          RELAY_URL: ${{ vars.RELAY_URL }}                        # where Save and Publish go, e.g. https://edit.myhealingoasis.net
+
+      - name: Leave the edit page out of the live site
+        if: github.ref_name == 'main'
+        run: rm -rf dist/edit
 
       # Plain rsync over SSH: no third-party action, nothing to audit but these six lines.
       # --delete makes the docroot an exact copy of dist/. The one exception is .htaccess,

@@ -1,0 +1,23 @@
+---
+/** The home page: every section in order, filled from the content file.
+ *  `edit` turns each piece of copy into a form field; see pages/edit.astro. */
+import Nav from './Nav.astro';
+import Hero from './Hero.astro';
+import Proof from './Proof.astro';
+import Testimonials from './Testimonials.astro';
+import Meet from './Meet.astro';
+import QuoteBand from './QuoteBand.astro';
+import Footer from './Footer.astro';
+import home from '../../content/home.json';
+interface Props { edit?: boolean }
+const { edit = false } = Astro.props;
+---
+<div class="cpt d3">
+  <Nav site={home.site} links={home.nav.links} edit={edit} />
+  <Hero {...home.hero} edit={edit} />
+  <Proof stats={home.stats} edit={edit} />
+  <Testimonials {...home.testimonials} edit={edit} />
+  <Meet {...home.meet} edit={edit} />
+  <QuoteBand {...home.quote} edit={edit} />
+  <Footer {...home.footer} edit={edit} />
+</div>

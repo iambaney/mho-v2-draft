@@ -1,4 +1,4 @@
-# Pages CMS (https://pagescms.org) reads this file and shows content/home.yaml as a form,
+# Pages CMS (https://pagescms.org) reads this file and shows content/home.json as a form,
 # with a Publish button. Field order here is the order in the form.
 #
 # Setup, once: connect the repo at https://app.pagescms.org (sign in with GitHub, pick the
@@ -22,7 +22,7 @@ content:
   - name: home
     label: Home page
     type: file
-    path: content/home.yaml
+    path: content/home.json
     fields:
       - name: site
         label: Site

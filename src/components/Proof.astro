@@ -1,8 +1,8 @@
 ---
 import Stat from './Stat.astro';
-interface Props { stats: { value: string; label: string; stars?: boolean }[] }
-const { stats } = Astro.props;
+interface Props { stats: { value: string; label: string; stars?: boolean }[]; edit?: boolean }
+const { stats, edit = false } = Astro.props;
 ---
 <div class="proof">
-  {stats.map((s) => <Stat {...s} />)}
+  {stats.map((s, i) => <Stat {...s} k={`stats.${i}`} edit={edit} />)}
 </div>
