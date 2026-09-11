@@ -29,8 +29,8 @@ Edits to `content/home.yaml`, the stylesheets, or the components show up in the 
 
 Two branches, two sites:
 
-- `draft` builds to the preview site. Content edits land here first.
-- `main` builds to the live site. It changes only when `draft` is merged into it.
+- `draft` builds to the preview site: https://iambaney.github.io/mho-v2-draft/draft/ (content edits land here first)
+- `main` builds to the live site: https://iambaney.github.io/mho-v2-draft/ (changes only when `draft` is merged into it)
 
 Pushing either branch runs the workflow in `.github/workflows/`, which builds the site and uploads `dist/`. The GitHub Pages workflow is the proof of concept; `deploy-dreamhost.yml.example` is the same workflow with the upload step pointed at Dreamhost.
 
